@@ -41,7 +41,7 @@ jobs:
           fi
           git merge --no-edit upstream/main -m "Merge upstream $(git rev-parse --short upstream/main)"
           echo "changed=true" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         if: steps.merge.outputs.changed == 'true'
         with:
           go-version-file: core-service/go.mod
