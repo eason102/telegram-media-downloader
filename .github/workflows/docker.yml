@@ -6,6 +6,9 @@ on:
     tags: ['v*']
   pull_request:
     branches: [main]
+  # Fork: the weekly upstream sync pushes with GITHUB_TOKEN, which does not
+  # trigger push workflows, so it starts this build explicitly.
+  workflow_dispatch:
 
 jobs:
   build:
@@ -33,6 +36,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
       - name: Build candidate locally
         uses: docker/build-push-action@v7
         with:
@@ -91,7 +95,8 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          # Fork: only the amd64 host (Intel N100) runs this image.
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
